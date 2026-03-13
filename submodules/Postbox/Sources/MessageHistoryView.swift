@@ -693,19 +693,16 @@ final class MutableMessageHistoryView: MutablePostboxView {
                         if loadedState.updateGroupInfo(mapping: groupInfos) {
                             hasChanges = true
                         }
-                    case let .UpdateReadState(peerId, combinedReadState):
-                        if case let .single(_, threadId) = self.peerIds, threadId != nil {
-                        } else {
-                            hasChanges = true
-                            if let transientReadStates = self.transientReadStates {
-                                switch transientReadStates {
-                                case let .peer(states):
-                                    var updatedStates = states
-                                    updatedStates[peerId] = combinedReadState
-                                    self.transientReadStates = .peer(updatedStates)
-                                }
-                            }
-                        }
+case let .UpdateReadState(peerId, combinedReadState):
+    if case let .single(_, threadId) = self.peerIds, threadId != nil {
+    } else {
+        // hasChanges = true  <-- Комментируем, чтобы UI не дергался
+        /* Блокируем обновление состояния чтения локально
+        if let transientReadStates = self.transientReadStates {
+            ...
+        }
+        */
+    }
                     case let .UpdateTimestamp(index, timestamp):
                         if loadedState.updateTimestamp(postbox: postbox, index: index, timestamp: timestamp) {
                             hasChanges = true
