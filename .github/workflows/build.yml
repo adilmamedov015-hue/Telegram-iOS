@@ -18,11 +18,26 @@ jobs:
       - name: Install Bazelisk
         run: brew install bazelisk
 
-      - name: Prepare build environment (use template + fix xcode version)
+      - name: Find all occurrences of Xcode 26.2
+        run: |
+          echo "=== Поиск строки '26.2' во всех файлах ==="
+          grep -r -n "26\.2" . || echo "Ничего не найдено"
+          echo "=== Проверка ключевых файлов ==="
+          echo "--- versions.json ---"
+          cat versions.json 2>/dev/null || echo "versions.json не найден"
+          echo "--- build-system/versions.json ---"
+          cat build-system/versions.json 2>/dev/null || echo "build-system/versions.json не найден"
+          echo "--- .bazelrc ---"
+          cat .bazelrc 2>/dev/null || echo ".bazelrc не найден"
+          echo "--- WORKSPACE ---"
+          cat WORKSPACE 2>/dev/null || echo "WORKSPACE не найден"
+          echo "--- build-system/bazel-ios-common/bazel_ios_common.bzl (или похожий) ---"
+          find . -name "*.bzl" -exec grep -l "26\.2" {} \; -exec cat {} \; || echo "В .bzl не найдено"
+
+      - name: Prepare build environment (with template)
         run: |
           mkdir -p build-input/fake-codesigning
           cp build-system/template_minimal_development_configuration.json build-input/config.json
-          # Заменяем неверную версию Xcode на 16.2 (если там 26.2)
           sed -i '' 's/"xcode_version": *"[^"]*"/"xcode_version": "16.2"/' build-input/config.json
 
       - name: Build IPA for device
