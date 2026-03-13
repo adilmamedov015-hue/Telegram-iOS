@@ -32,9 +32,15 @@ jobs:
           }
           EOF
 
-      - name: Find where Xcode 26.2 is required
+      # Ищем, откуда берётся 26.2
+      - name: Find Xcode 26.2 requirement
         run: |
-          grep -r "26\.2" --include="*.json" --include="*.bzl" --include="*.bazel" --include="*.py" . || echo "Not found"
+          echo "=== Поиск в .json, .bzl, .bazel, .py ==="
+          grep -r "26\.2" --include="*.json" --include="*.bzl" --include="*.bazel" --include="*.py" . || echo "Не найдено в текстовых файлах"
+          echo "=== Содержимое versions.json (если есть) ==="
+          cat versions.json 2>/dev/null || echo "versions.json не найден"
+          echo "=== Содержимое build-system/versions.json (если есть) ==="
+          cat build-system/versions.json 2>/dev/null || echo "build-system/versions.json не найден"
 
       - name: Build IPA for device
         run: |
