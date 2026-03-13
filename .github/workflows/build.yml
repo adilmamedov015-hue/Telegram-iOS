@@ -32,15 +32,19 @@ jobs:
           }
           EOF
 
-      # Ищем, откуда берётся 26.2
       - name: Find Xcode 26.2 requirement
         run: |
           echo "=== Поиск в .json, .bzl, .bazel, .py ==="
-          grep -r "26\.2" --include="*.json" --include="*.bzl" --include="*.bazel" --include="*.py" . || echo "Не найдено в текстовых файлах"
+          grep -r "26\.2" --include="*.json" --include="*.bzl" --include="*.bazel" --include="*.py" . || echo "Не найдено"
           echo "=== Содержимое versions.json (если есть) ==="
           cat versions.json 2>/dev/null || echo "versions.json не найден"
           echo "=== Содержимое build-system/versions.json (если есть) ==="
           cat build-system/versions.json 2>/dev/null || echo "build-system/versions.json не найден"
+
+      - name: Replace Xcode 26.2 with 16.2 in files
+        run: |
+          find . -type f \( -name "*.json" -o -name "*.bzl" -o -name "*.bazel" -o -name "*.py" \) -exec sed -i '' 's/26\.2/16.2/g' {} \;
+          echo "Замена выполнена"
 
       - name: Build IPA for device
         run: |
