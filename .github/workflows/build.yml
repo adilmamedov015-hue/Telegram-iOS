@@ -32,6 +32,10 @@ jobs:
           }
           EOF
 
+      - name: Find where Xcode 26.2 is required
+        run: |
+          grep -r "26\.2" --include="*.json" --include="*.bzl" --include="*.bazel" --include="*.py" . || echo "Not found"
+
       - name: Build IPA for device
         run: |
           python3 build-system/Make/Make.py build \
