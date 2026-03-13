@@ -18,15 +18,19 @@ jobs:
       - name: Install Bazelisk
         run: brew install bazelisk
 
-      - name: Prepare build environment
+      - name: Prepare custom configuration
         run: |
           mkdir -p build-input/fake-codesigning
-          cp build-system/template_minimal_development_configuration.json build-input/config.json
-
-      # Исправляем несуществующую версию Xcode в конфиге
-      - name: Fix xcode version in config
-        run: |
-          sed -i '' 's/"xcode_version": *"[^"]*"/"xcode_version": "16.2"/' build-input/config.json
+          cat > build-input/config.json <<EOF
+          {
+            "xcode_version": "16.2",
+            "ios_sdk_version": "18.0",
+            "macos_sdk_version": "15.0",
+            "tvos_sdk_version": "18.0",
+            "visionos_sdk_version": "2.0",
+            "minimum_ios_version": "13.0"
+          }
+          EOF
 
       - name: Build IPA for device
         run: |
