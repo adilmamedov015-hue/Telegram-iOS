@@ -26,6 +26,7 @@ jobs:
       - name: Build IPA for device
         run: |
           python3 build-system/Make/Make.py build \
+            --buildNumber=1 \
             --configurationPath=build-input/config.json \
             --codesigningInformationPath=build-input/fake-codesigning \
             --configuration=debug_arm64
