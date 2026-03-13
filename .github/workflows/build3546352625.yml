@@ -1,0 +1,38 @@
+name: Build Telegram IPA (modified)
+
+on:
+  workflow_dispatch:  # ручной запуск
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+
+      - name: Install Bazelisk
+        run: brew install bazelisk
+
+      - name: Prepare build environment (fake signing)
+        run: |
+          mkdir -p build-input/fake-codesigning
+          cp build-system/template_minimal_development_configuration.json build-input/config.json
+
+      - name: Build IPA for device (arm64, no real signature)
+        run: |
+          python3 build-system/Make/Make.py build \
+            --configurationPath=build-input/config.json \
+            --codesigningInformationPath=build-input/fake-codesigning \
+            --configuration=debug_arm64
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Telegram-ipa-modified
+          path: build-output/Telegram.ipa
+#f
